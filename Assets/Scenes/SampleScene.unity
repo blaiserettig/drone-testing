@@ -429,7 +429,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62494072}
   serializedVersion: 5
-  m_Mass: 2
+  m_Mass: 4
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -483,7 +483,7 @@ MonoBehaviour:
   - {fileID: 437192545}
   - {fileID: 752691527}
   maxRollPitchAngle: 45
-  maxYawRate: 150
+  maxYawRate: 50
 --- !u!114 &62494080
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1135,9 +1135,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 10
+  scale: 30
   isClockwise: 0
-  torqueCoefficient: 1
+  torqueCoefficient: 0.75
   timeConstant: 0.05
 --- !u!1 &451519935
 GameObject:
@@ -1972,9 +1972,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 10
+  scale: 30
   isClockwise: 1
-  torqueCoefficient: 1
+  torqueCoefficient: 0.75
   timeConstant: 0.05
 --- !u!1 &832575517
 GameObject:
@@ -3136,9 +3136,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 10
+  scale: 30
   isClockwise: 1
-  torqueCoefficient: 1
+  torqueCoefficient: 0.75
   timeConstant: 0.05
 --- !u!1 &1593862289
 GameObject:
@@ -3340,9 +3340,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 10
+  scale: 30
   isClockwise: 0
-  torqueCoefficient: 1
+  torqueCoefficient: 0.75
   timeConstant: 0.05
 --- !u!1 &1849444528
 GameObject:
