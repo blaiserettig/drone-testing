@@ -429,7 +429,7 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 62494072}
   serializedVersion: 5
-  m_Mass: 4
+  m_Mass: 3
   m_LinearDamping: 0
   m_AngularDamping: 0.05
   m_CenterOfMass: {x: 0, y: 0, z: 0}
@@ -1135,7 +1135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 30
+  scale: 15
   isClockwise: 0
   torqueCoefficient: 0.75
   timeConstant: 0.05
@@ -1972,7 +1972,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 30
+  scale: 15
   isClockwise: 1
   torqueCoefficient: 0.75
   timeConstant: 0.05
@@ -3136,7 +3136,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 30
+  scale: 15
   isClockwise: 1
   torqueCoefficient: 0.75
   timeConstant: 0.05
@@ -3340,7 +3340,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
-  scale: 30
+  scale: 15
   isClockwise: 0
   torqueCoefficient: 0.75
   timeConstant: 0.05
