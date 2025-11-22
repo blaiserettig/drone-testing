@@ -11,7 +11,7 @@ public class Motor : MonoBehaviour
     private float _currentThrust;
     private float _targetThrust;
 
-    public float torqueCoefficient = 0.05f;
+    public float torqueCoefficient = 0.1f;
     
     //  input latency
     public float timeConstant = 0.05f; 
@@ -30,8 +30,8 @@ public class Motor : MonoBehaviour
 
         parentRb.AddForceAtPosition(transform.up * scale * _currentThrust, transform.position);
         
-        //float torque = torqueCoefficient * _currentThrust * (isClockwise ? 1f : -1f);
-        //parentRb.AddTorque(transform.up * torque, ForceMode.Force);
+        float torque = torqueCoefficient * _currentThrust * (isClockwise ? -1f : 1f);
+        parentRb.AddTorque(parentRb.transform.up * torque, ForceMode.Force);
     }
     
     

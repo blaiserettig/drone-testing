@@ -60,8 +60,8 @@ public class FlightController : MonoBehaviour
     private PIDController pitchAnglePID = new PIDController(3.0f, 0.0f, 0.5f, 200f, 0f);
 
     // Rate PIDs (Inner Loop) - Output is Motor Mix
-    private PIDController rollRatePID = new PIDController(0.8f, 0.1f, 0.15f, 0.25f, 0.5f);
-    private PIDController pitchRatePID = new PIDController(0.8f, 0.1f, 0.15f, 0.25f, 0.5f);
+    private PIDController rollRatePID = new PIDController(0.8f, 0.01f, 0.15f, 0.25f, 0.5f);
+    private PIDController pitchRatePID = new PIDController(0.8f, 0.01f, 0.15f, 0.25f, 0.5f);
     private PIDController yawRatePID = new PIDController(0.05f, 0.01f, 0.002f, 0.25f, 0.5f);
 
     [Header("Settings")]
