@@ -13,9 +13,7 @@ public class PIDController
     private float _integral;
     private float _lastInput;
     
-    public bool armed = false;
-    public float idleThrottle = 0.05f;
-
+    // proportional integral derivative controller
     public PIDController(float kp, float ki, float kd, float maxOutput, float maxI)
     {
         Kp = kp;
@@ -27,12 +25,15 @@ public class PIDController
 
     public float Update(float error, float input, float dt)
     {
+        // responds to current error value by producing output that is directly proportional to magnitude of error
         float p = Kp * error;
 
+        // cumulative sum of past errors
         _integral += error * dt;
         _integral = Mathf.Clamp(_integral, -MaxI, MaxI);
         float i = Ki * _integral;
 
+        // predict future error by assessing rate of change
         float d = -Kd * (input - _lastInput) / dt;
         _lastInput = input;
 
@@ -69,7 +70,7 @@ public class FlightController : MonoBehaviour
 
     private Vector3 _currentEuler;
     private Vector3 _currentGyro;
-    private float _targetRoll, _targetPitch, _targetYawRate, _throttle;
+    private float _targetRoll, _targetPitch, _targetYaw, _throttle;
     private float _motorMixLF, _motorMixRF, _motorMixLR, _motorMixRR;
 
     void Start()
@@ -97,7 +98,7 @@ public class FlightController : MonoBehaviour
             
             _targetRoll = -_input.Roll * maxRollPitchAngle;
             _targetPitch = _input.Pitch * maxRollPitchAngle;
-            _targetYawRate = _input.Yaw * maxYawRate;
+            _targetYaw = _input.Yaw * maxYawRate;
             _throttle = _input.Throttle;
 
             yield return new WaitForFixedUpdate(); 
@@ -109,21 +110,22 @@ public class FlightController : MonoBehaviour
         while (true)
         {
             float dt = Time.fixedDeltaTime;
-
-            // error
+            
+            // "how far off is the angle of rotation"
             float rollError = _targetRoll - _currentEuler.z;
             float pitchError = _targetPitch - _currentEuler.x;
 
-            // target rates
+            // "given the previous error, how fast should we now rotate to correct it"
+            // "ex: rotate at ___ deg / sec to fix"
             float rollRateSetPoint = rollAnglePID.Update(rollError, _currentEuler.z, dt);
             float pitchRateSetPoint = pitchAnglePID.Update(pitchError, _currentEuler.x, dt);
 
-            // rate error
+            // "supposed to be rotating at x deg/sec, but actually rotating at y deg/sec"
             float rollRateError = rollRateSetPoint - _currentGyro.z;
             float pitchRateError = pitchRateSetPoint - _currentGyro.x;
-            float yawRateError = _targetYawRate - _currentGyro.y;
+            float yawRateError = _targetYaw - _currentGyro.y;
 
-            // PID output
+            // "given the rate error, how much motor force is needed to achieve target rotation"
             float rollOut = rollRatePID.Update(rollRateError, _currentGyro.z, dt);
             float pitchOut = pitchRatePID.Update(pitchRateError, _currentGyro.x, dt);
             float yawOut = yawRatePID.Update(yawRateError, _currentGyro.y, dt);
@@ -131,12 +133,12 @@ public class FlightController : MonoBehaviour
             // mixing
             // LF (CW)  RF (CCW)
             // LR (CCW) RR (CW)
-            // Corrected for Unity Frame:
+
             // pitch forward (+X) -> rear boost (+), front cut (-)
             // roll left (+Z) -> left cut (-), right boost (+)
             
             // Right after calculating yawOut
-            Debug.Log($"Yaw Input: {_input.Yaw} | Target Rate: {_targetYawRate} | Current Gyro.Y: {_currentGyro.y} | Yaw Error: {yawRateError} | Yaw Out: {yawOut}");
+            Debug.Log($"Yaw Input: {_input.Yaw} | Target Rate: {_targetYaw} | Current Gyro.Y: {_currentGyro.y} | Yaw Error: {yawRateError} | Yaw Out: {yawOut}");
             
             _motorMixLF = _throttle - pitchOut - rollOut - yawOut;
             _motorMixRF = _throttle - pitchOut + rollOut + yawOut;
