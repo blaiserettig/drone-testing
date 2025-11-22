@@ -20,41 +20,37 @@ namespace Utility
         public float minPitch = 0f;
         public float maxPitch = 80f;
 
-        [Header("Additive Target Rotation")]
-        public float pitchInfluence = 1f;
-        public float rollInfluence = 1f;
-
         [Header("Smoothing")]
-        public float smoothTime = 0.1f;
+        public float positionSmooth = 0.1f;
+        public float rotationSmooth = 0.08f;
 
         private float _yaw = 0f;
         private float _pitch = 20f;
 
-        private Vector3 _currentVelocity;
+        // smoothed values
+        private float _smoothYaw;
+        private float _smoothPitch;
+        private float _yawVel;
+        private float _pitchVel;
+        private Vector3 _positionVel;
+
         private Vector3 _targetPosition;
 
         private bool _isOrbiting = false;
 
-        private void Awake()
-        {
-            if (!target)
-            {
-                Debug.LogError("CameraController: No target set!");
-            }
-        }
-
         private void Update()
         {
-            if (target == null) return;
+            if (!target) return;
 
             var mouse = Mouse.current;
             var scroll = mouse.scroll.ReadValue().y;
-            
+
+            // zoom
             distance -= scroll * zoomSpeed;
             distance = Mathf.Clamp(distance, minDistance, maxDistance);
 
+            // orbit
             _isOrbiting = mouse.rightButton.isPressed;
-
             if (_isOrbiting)
             {
                 var delta = mouse.delta.ReadValue();
@@ -62,22 +58,29 @@ namespace Utility
                 _pitch -= delta.y * orbitSpeedY * Time.deltaTime;
                 _pitch = Mathf.Clamp(_pitch, minPitch, maxPitch);
             }
-            
-            Vector3 targetEuler = target.rotation.eulerAngles;
-            float additivePitch = 0;//NormalizeAngle(targetEuler.x) * pitchInfluence;
-            float additiveRoll = 0; //NormalizeAngle(targetEuler.z) * rollInfluence;
 
-            Quaternion orbitRotation = Quaternion.Euler(_pitch + additivePitch, _yaw, additiveRoll);
-            _targetPosition = target.position - (orbitRotation * Vector3.forward * distance);
+            // Smooth rotation
+            _smoothYaw = Mathf.SmoothDampAngle(_smoothYaw, _yaw, ref _yawVel, rotationSmooth);
+            _smoothPitch = Mathf.SmoothDampAngle(_smoothPitch, _pitch, ref _pitchVel, rotationSmooth);
 
-            transform.position = Vector3.SmoothDamp(transform.position, _targetPosition, ref _currentVelocity, smoothTime);
-            transform.rotation = orbitRotation;
+            Quaternion rotation = Quaternion.Euler(_smoothPitch, _smoothYaw, 0);
+            _targetPosition = target.position - rotation * Vector3.forward * distance;
         }
-        
-        private float NormalizeAngle(float angle)
+
+        private void LateUpdate()
         {
-            if (angle > 180f) angle -= 360f;
-            return angle;
+            if (!target) return;
+
+            // Smooth position
+            transform.position = Vector3.SmoothDamp(
+                transform.position,
+                _targetPosition,
+                ref _positionVel,
+                positionSmooth
+            );
+
+            // Smooth rotation (already smoothed via damp)
+            transform.rotation = Quaternion.Euler(_smoothPitch, _smoothYaw, 0);
         }
     }
 }
