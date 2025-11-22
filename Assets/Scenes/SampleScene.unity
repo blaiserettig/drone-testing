@@ -147,7 +147,7 @@ Transform:
   m_GameObject: {fileID: 10038292}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.57, z: 0.42}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 0.15, z: 0.15}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1159,9 +1159,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
   scale: 10
+  isClockwise: 0
+  torqueCoefficient: 0.1
   timeConstant: 0.05
-  torqueCoefficient: 0.02
-  rotatesClockwise: 1
 --- !u!1 &451519935
 GameObject:
   m_ObjectHideFlags: 0
@@ -1996,9 +1996,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
   scale: 10
+  isClockwise: 1
+  torqueCoefficient: 0.1
   timeConstant: 0.05
-  torqueCoefficient: 0.02
-  rotatesClockwise: 0
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -3160,9 +3160,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
   scale: 10
+  isClockwise: 1
+  torqueCoefficient: 0.1
   timeConstant: 0.05
-  torqueCoefficient: 0.02
-  rotatesClockwise: 0
 --- !u!1 &1593862289
 GameObject:
   m_ObjectHideFlags: 0
@@ -3364,9 +3364,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Motor
   parentRb: {fileID: 62494077}
   scale: 10
+  isClockwise: 0
+  torqueCoefficient: 0.1
   timeConstant: 0.05
-  torqueCoefficient: 0.02
-  rotatesClockwise: 1
 --- !u!1 &1849444528
 GameObject:
   m_ObjectHideFlags: 0

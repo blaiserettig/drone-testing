@@ -1,13 +1,17 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 
 public class Motor : MonoBehaviour
 {
     public Rigidbody parentRb;
     public float scale = 1f;
+    public bool isClockwise = false;
     
     private float _currentThrust;
     private float _targetThrust;
+
+    public float torqueCoefficient = 0.05f;
     
     //  input latency
     public float timeConstant = 0.05f; 
@@ -19,12 +23,16 @@ public class Motor : MonoBehaviour
 
     void FixedUpdate()
     {
-        // lag filter new = old + (target - old) * (dt / tau)
         float dt = Time.fixedDeltaTime;
-        float alpha = dt / (timeConstant + dt);
+        float f = dt / (timeConstant + dt);
         
-        _currentThrust = _currentThrust + (_targetThrust - _currentThrust) * alpha;
+        _currentThrust += (_targetThrust - _currentThrust) * f;
 
         parentRb.AddForceAtPosition(transform.up * scale * _currentThrust, transform.position);
+        
+        //float torque = torqueCoefficient * _currentThrust * (isClockwise ? 1f : -1f);
+        //parentRb.AddTorque(transform.up * torque, ForceMode.Force);
     }
+    
+    
 }

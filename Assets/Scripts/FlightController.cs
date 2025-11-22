@@ -60,9 +60,9 @@ public class FlightController : MonoBehaviour
     private PIDController pitchAnglePID = new PIDController(3.0f, 0.0f, 0.5f, 200f, 0f);
 
     // Rate PIDs (Inner Loop) - Output is Motor Mix
-    private PIDController rollRatePID = new PIDController(0.8f, 0.1f, 0.15f, 1f, 0.5f);
-    private PIDController pitchRatePID = new PIDController(0.8f, 0.1f, 0.15f, 1f, 0.5f);
-    private PIDController yawRatePID = new PIDController(0.5f, 0.1f, 0.01f, 1f, 0.5f);
+    private PIDController rollRatePID = new PIDController(0.8f, 0.1f, 0.15f, 0.25f, 0.5f);
+    private PIDController pitchRatePID = new PIDController(0.8f, 0.1f, 0.15f, 0.25f, 0.5f);
+    private PIDController yawRatePID = new PIDController(0.05f, 0.01f, 0.002f, 0.25f, 0.5f);
 
     [Header("Settings")]
     public float maxRollPitchAngle = 45f;
@@ -138,13 +138,19 @@ public class FlightController : MonoBehaviour
             // roll left (+Z) -> left cut (-), right boost (+)
             
             // Right after calculating yawOut
-            Debug.Log($"Yaw Input: {_input.Yaw} | Target Rate: {_targetYaw} | Current Gyro.Y: {_currentGyro.y} | Yaw Error: {yawRateError} | Yaw Out: {yawOut}");
+            //Debug.Log($"Yaw Input: {_input.Yaw} | Target Rate: {_targetYaw} | Current Gyro.Y: {_currentGyro.y} | Yaw Error: {yawRateError} | Yaw Out: {yawOut}");
+            Debug.Log($"PID Outputs: Roll={rollOut:F3} Pitch={pitchOut:F3} Yaw={yawOut:F3}");
             
             _motorMixLF = _throttle - pitchOut - rollOut - yawOut;
             _motorMixRF = _throttle - pitchOut + rollOut + yawOut;
             _motorMixLR = _throttle + pitchOut - rollOut + yawOut;
             _motorMixRR = _throttle + pitchOut + rollOut - yawOut;
 
+            _motorMixLF = Mathf.Clamp01(_motorMixLF);
+            _motorMixRF = Mathf.Clamp01(_motorMixRF);
+            _motorMixLR = Mathf.Clamp01(_motorMixLR);
+            _motorMixRR = Mathf.Clamp01(_motorMixRR);
+            
             Debug.Log($"Throttle: {_throttle} | Motors: LF={_motorMixLF:F3} RF={_motorMixRF:F3} LR={_motorMixLR:F3} RR={_motorMixRR:F3}");
             
             yield return new WaitForFixedUpdate();
@@ -155,14 +161,6 @@ public class FlightController : MonoBehaviour
     {
         while (true) 
         {
-            if (_throttle <= 0.01f && transform.position.y < 1f)
-            {
-                _motorMixLF = 0f;
-                _motorMixRF = 0f;
-                _motorMixLR = 0f;
-                _motorMixRR = 0f;
-            }
-            
             motors[0].SetThrust(_motorMixLF);
             motors[1].SetThrust(_motorMixRF);
             motors[2].SetThrust(_motorMixLR);
