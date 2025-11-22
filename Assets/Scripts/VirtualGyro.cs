@@ -13,7 +13,7 @@ public class VirtualGyro : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        gyro = rb.angularVelocity;
+        gyro = rb.angularVelocity * Mathf.Rad2Deg;
         accel = (rb.linearVelocity - _lastVel) / Time.fixedDeltaTime;
         _lastVel = rb.linearVelocity;
         euler = rb.rotation.eulerAngles;

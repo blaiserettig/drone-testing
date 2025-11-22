@@ -12,6 +12,9 @@ public class PIDController
 
     private float _integral;
     private float _lastInput;
+    
+    public bool armed = false;
+    public float idleThrottle = 0.05f;
 
     public PIDController(float kp, float ki, float kd, float maxOutput, float maxI)
     {
@@ -58,11 +61,11 @@ public class FlightController : MonoBehaviour
     // Rate PIDs (Inner Loop) - Output is Motor Mix
     private PIDController rollRatePID = new PIDController(0.8f, 0.1f, 0.15f, 1f, 0.5f);
     private PIDController pitchRatePID = new PIDController(0.8f, 0.1f, 0.15f, 1f, 0.5f);
-    private PIDController yawRatePID = new PIDController(1.2f, 0.5f, 0.02f, 1f, 0.5f);
+    private PIDController yawRatePID = new PIDController(0.5f, 0.1f, 0.01f, 1f, 0.5f);
 
     [Header("Settings")]
     public float maxRollPitchAngle = 45f;
-    public float maxYawRate = 150f;
+    public float maxYawRate = 150;
 
     private Vector3 _currentEuler;
     private Vector3 _currentGyro;
@@ -92,10 +95,10 @@ public class FlightController : MonoBehaviour
             
             _currentGyro = gyro.gyro; // deg/s
             
-            _targetRoll = _input.Roll * maxRollPitchAngle;
+            _targetRoll = -_input.Roll * maxRollPitchAngle;
             _targetPitch = _input.Pitch * maxRollPitchAngle;
             _targetYawRate = _input.Yaw * maxYawRate;
-            _throttle = Mathf.Clamp01(_input.Throttle);
+            _throttle = _input.Throttle;
 
             yield return new WaitForFixedUpdate(); 
         }
@@ -132,19 +135,32 @@ public class FlightController : MonoBehaviour
             // pitch forward (+X) -> rear boost (+), front cut (-)
             // roll left (+Z) -> left cut (-), right boost (+)
             
+            // Right after calculating yawOut
+            Debug.Log($"Yaw Input: {_input.Yaw} | Target Rate: {_targetYawRate} | Current Gyro.Y: {_currentGyro.y} | Yaw Error: {yawRateError} | Yaw Out: {yawOut}");
+            
             _motorMixLF = _throttle - pitchOut - rollOut - yawOut;
             _motorMixRF = _throttle - pitchOut + rollOut + yawOut;
             _motorMixLR = _throttle + pitchOut - rollOut + yawOut;
             _motorMixRR = _throttle + pitchOut + rollOut - yawOut;
 
+            Debug.Log($"Throttle: {_throttle} | Motors: LF={_motorMixLF:F3} RF={_motorMixRF:F3} LR={_motorMixLR:F3} RR={_motorMixRR:F3}");
+            
             yield return new WaitForFixedUpdate();
         }
     }
 
     IEnumerator MotorsTask()
     {
-        while (true)
+        while (true) 
         {
+            if (_throttle <= 0.01f && transform.position.y < 1f)
+            {
+                _motorMixLF = 0f;
+                _motorMixRF = 0f;
+                _motorMixLR = 0f;
+                _motorMixRR = 0f;
+            }
+            
             motors[0].SetThrust(_motorMixLF);
             motors[1].SetThrust(_motorMixRF);
             motors[2].SetThrust(_motorMixLR);

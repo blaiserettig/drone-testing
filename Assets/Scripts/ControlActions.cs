@@ -22,10 +22,14 @@ public class ControlActions : MonoBehaviour
         
         _controls.Drone.Yaw.performed += ctx => Yaw = ctx.ReadValue<float>();
         _controls.Drone.Yaw.canceled += ctx => Yaw = 0f;
-        
-        _controls.Drone.Throttle.performed += ctx => Throttle = ctx.ReadValue<float>();
-        _controls.Drone.Throttle.canceled += ctx => Throttle = 0f;
     }
+
+    private void Update()
+    {
+        float rawThrottle = _controls.Drone.Throttle.ReadValue<float>();
+        Throttle = Mathf.Max(0f, rawThrottle);
+    }
+
 
     private void OnEnable()  => _controls.Enable();
     private void OnDisable() => _controls.Disable();
